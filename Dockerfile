@@ -1,20 +1,19 @@
-# Use .NET 8 SDK for building
+# Use .NET 8 SDK as build environment
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy only the .csproj and restore
+# Copy only the csproj to restore packages
 COPY RecipeBookaApi/*.csproj ./RecipeBookaApi/
 RUN dotnet restore RecipeBookaApi/RecipeBookaApi.csproj
 
-# Copy the rest of the project files
+# Copy the entire project
 COPY . .
 
-# Build the project
+# Build the app
 RUN dotnet publish RecipeBookaApi/RecipeBookaApi.csproj -c Release -o out
 
-# Runtime image
+# Use runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
